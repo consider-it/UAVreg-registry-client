@@ -5,11 +5,16 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"strconv"
 )
 
 const buildVersion string = "v0.0.1"
 
-const droneIdLenByte int = 18
+// configuration parameters
+const droneIDByteLen = 18
+
+// constants and global variables
+const droneIDHexLen = 2 * droneIDByteLen
 
 var droneID string
 var revoke bool
@@ -28,22 +33,22 @@ func main() {
 
 	// check inputs
 	if droneID == "0" {
-		fmt.Println("please set a drone id with the -d flag")
-		log.Fatalln("no droneID set")
+		fmt.Println("Please set a drone id with the -d flag")
+		log.Fatalln("fatal error: no droneID set")
 	}
-	if len(droneID) != 2*droneIdLenByte {
-		fmt.Println("drone id must be 18 Byte long")
-		log.Fatalln("wrong size of droneID")
+	if len(droneID) != droneIDHexLen {
+		fmt.Println("Drone id must be " + strconv.Itoa(droneIDByteLen) + " Byte long")
+		log.Fatalln("fatal error: wrong size of droneID")
 	}
 
 	// parse drone ID to byte array (to check if it is valid)
-	droneIDBytes := make([]byte, droneIdLenByte)
+	droneIDBytes := make([]byte, droneIDByteLen)
 	_, err := hex.Decode(droneIDBytes, []byte(droneID))
 	if err != nil {
-		fmt.Println("drone id must contain valid hex chars")
-		log.Fatal(err)
+		fmt.Println("Drone id must contain valid hex chars")
+		log.Fatalln("fatal error:\n", err)
 	}
 
 	// TODO: actually send data to dronePKI
-	log.Fatal("TODO: nothing implemented yet")
+	log.Fatalln("TODO: nothing implemented yet")
 }
