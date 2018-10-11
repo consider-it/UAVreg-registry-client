@@ -22,10 +22,12 @@ const droneIDByteLen = 18
 const droneIDHexLen = 2 * droneIDByteLen
 
 var droneID string
+var validityDurationWeeks int
 var apiURL string
 
 func init() {
 	flag.StringVar(&droneID, "d", "0", "drone ID as hex string")
+	flag.IntVar(&validityDurationWeeks, "w", 4, "validity duration in weeks")
 	flag.StringVar(&apiURL, "u", "http://localhost:8080/registry", "URL to send the POST request to")
 	flag.Parse()
 }
@@ -33,6 +35,7 @@ func init() {
 func main() {
 	fmt.Println("droneregistry client " + buildVersion)
 	fmt.Println("- drone ID: ", droneID)
+	fmt.Println("- validity: ", validityDurationWeeks, "weeks")
 	fmt.Println("- url:      ", apiURL)
 	fmt.Println("")
 
@@ -54,9 +57,9 @@ func main() {
 		log.Fatalln("fatal error:\n", err)
 	}
 
-	// auto-set valdity from now until now + 2 months
+	// auto-set validity from now until now + $validityDurationWeeks weeks
 	validFrom := time.Now()
-	validUntil := time.Now().AddDate(0, 2, 0)
+	validUntil := time.Now().AddDate(0, 0, 7*validityDurationWeeks)
 
 	var jsonStr = []byte(`[{"droneId": "` + droneID + `", "validFrom": "` + validFrom.Format(time.RFC3339) + `", "validUntil": "` + validUntil.Format(time.RFC3339) + `"}]`)
 
