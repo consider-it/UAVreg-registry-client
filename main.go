@@ -1,3 +1,6 @@
+// Drone Insurance Client is a very simple client for the sqlite registry API
+// dependencies: <none>
+// copyright: Jannik Beyerstedt
 package main
 
 import (
