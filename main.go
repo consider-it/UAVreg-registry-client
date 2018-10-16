@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-const buildVersion string = "v0.0.1"
+const buildVersion string = "v0.9.0"
 
 // configuration parameters
 const droneIDByteLen = 18
