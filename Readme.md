@@ -1,12 +1,12 @@
-# UAV e-Registration: PKI Server
+# UAV e-Registration: Registry Client for the Insurance Company
 _A demo PKI for drone certification used to sign D2X (Drone to anything) messages._
 
 The PKI consists of three "server"-side applications, which inter-connect, as well as a possible third-party drone registry service.
 The cryptographic signature algorithm used is ECDSA with the NIST P-256 curve.
 
 ## Information
-This application is the main part, which issues certificate to drones (which have sent a CSR).
-The implementation can use different drone registies and it also has a very simple registry built in.
+This application is a very simple client for the insurance company to register new drones at the built-in registry.
+Only a very basic functionality is implemented, which is needed for demonstration purposes.
 
 
 ## Installation
@@ -15,8 +15,8 @@ Because the application is written in [go](https://golang.org), a working go dir
 To compile the binary yourself, download (or get if ssh to this bitbucket repo is set up) the application and it's dependencies:
 ```
 cd ~/go
-go get bitbucket.org/nxp-d2x/d2xregistryclient
-cd bitbucket.org/nxp-d2x/d2xregistryclient
+git clone git@bitbucket.org:nxp-drone/d2xregistryclient.git ./src/bitbucket.org/nxp-drone/d2xregistryclient
+cd src/bitbucket.org/nxp-d2x/d2xregistryclient
 go get
 ```
 
