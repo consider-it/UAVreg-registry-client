@@ -1,48 +1,43 @@
-# UAV e-Registration: Registry Client for the Insurance Company
-_A demo PKI for drone certification used to sign D2X (Drone to anything) messages._
-
-The PKI consists of three "server"-side applications, which inter-connect, as well as a possible third-party drone registry service.
-The cryptographic signature algorithm used is ECDSA with the NIST P-256 curve.
-
-## Information
-This application is a very simple client for the insurance company to register new drones at the built-in registry.
-Only a very basic functionality is implemented, which is needed for demonstration purposes.
+# UAV e-Registration: Demo UAV Registry Client
+_A client to register UAVs in the built-in demo UAV registry of the UAVreg-PKI-server._
 
 
-## Installation
-Because the application is written in [go](https://golang.org), a working go directory and compiler must be present.
+## Installation and Usage
 
-To compile the binary yourself, download (or get if ssh to this bitbucket repo is set up) the application and it's dependencies:
+### Installation
+Please make sure, that a [go](https://golang.org) toolchain is present and your go working directory is set up properly.
+
+Now go to `$GOPATH/src/` and clone this repository:
+```shell
+git clone gitea@office.consider-ip.com:UDVeo/UAVreg-registry-client.git
 ```
-cd ~/go
-git clone git@bitbucket.org:nxp-drone/d2xregistryclient.git ./src/bitbucket.org/nxp-drone/d2xregistryclient
-cd src/bitbucket.org/nxp-d2x/d2xregistryclient
+
+Enter the repositories directory and fetch the dependencies:
+```shell
 go get
 ```
 
-Run any application without installing:
-```
-go run *.go $FLAGS
-```
+Finally you can either run without installing or install the application to your go binary directory:
+```shell
+## just compile and run
+go run *.go <flags>
 
-Install the application to `~/go/bin/`:
-```
+## install to $HOME/go/bin/ and run from there
 go install
+$HOME/go/bin/UAVreg-registry-client <flags>
 ```
-(Don't forget to set the `$GOBIN` environment variable to `~/go/bin` and to add that to your `$PATH`.)
+Don't forget to add the go binary path to your `$PATH` environment variable, if you like to execute the application like every other application.
 
 
-## Usage
-To experiment with the internal drone registry (sqlite database), a simple insurance client is provided.
-This client can register or update a drone's insurance validity.
+### Usage
+This client applications uses the API of the built-in demo UAV registry provided by the UAVreg-PKI-server.
+So the server has to run when using this application.
 
-To keep things simple, the validity period will always start now.
+Every UAV registration has a validity period and the UAV is identified by it's serial number (Drone ID).
+To simplify the interface, the validity period will always start now and a duration can be specified, which will be converted to an absolute timestamp automatically.
+
 The available command line flags are (default value printed bold):
 
 - `-d` Drone ID as hex string, required
 - `-w` Validity duration in weeks
 - `-u` API URL: **`http://localhost:8080/registry`**
-
-
-## Architecture
-see https://bitbucket.org/nxp-drone/d2xpkiserver

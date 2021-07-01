@@ -1,6 +1,8 @@
-// Drone Insurance Client is a very simple client for the sqlite registry API
-// dependencies: <none>
-// copyright: Jannik Beyerstedt
+// The UAVreg Registry Client provides an interface to the HTTP API of the built-in UAV registry
+// of the UAVreg PKI Server.
+//
+// Copyright: 2021 Jannik Beyerstedt (consider it GmbH)
+
 package main
 
 import (
@@ -16,7 +18,7 @@ import (
 	"time"
 )
 
-const buildVersion string = "v0.9.0"
+const buildVersion string = "v0.9.1"
 
 // configuration parameters
 const droneIDByteLen = 18
@@ -57,7 +59,7 @@ func main() {
 	_, err := hex.Decode(droneIDBytes, []byte(droneID))
 	if err != nil {
 		fmt.Println("Drone id must contain valid hex chars")
-		log.Fatalln("fatal error:\n", err)
+		log.Fatalln("fatal error:", err)
 	}
 
 	// auto-set validity from now until now + $validityDurationWeeks weeks
@@ -69,12 +71,15 @@ func main() {
 	// send data to dronePKI
 	fmt.Println("sending request to registry...")
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(jsonStr))
+	if err != nil {
+		log.Fatalln("fatal error:", err)
+	}
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalln("fatal error:\n", err)
+		log.Fatalln("fatal error:", err)
 	}
 	defer resp.Body.Close()
 
