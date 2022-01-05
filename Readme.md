@@ -9,7 +9,7 @@ Please make sure, that a [go](https://golang.org) toolchain is present and your 
 
 Now go to `$GOPATH/src/` and clone this repository:
 ```shell
-git clone gitea@office.consider-ip.com:UDVeo/UAVreg-registry-client.git
+git clone https://github.com/consider-it/UAVreg-registry-client.git
 ```
 
 Enter the repositories directory and fetch the dependencies:
