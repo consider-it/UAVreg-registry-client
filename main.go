@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-const buildVersion string = "v0.9.1"
+const buildVersion string = "v1.0.0"
 
 // configuration parameters
 const droneIDByteLen = 18
@@ -28,11 +28,13 @@ const droneIDHexLen = 2 * droneIDByteLen
 
 var droneID string
 var validityDurationWeeks int
+var validityDurationHours int
 var apiURL string
 
 func init() {
 	flag.StringVar(&droneID, "d", "0", "drone ID as hex string")
-	flag.IntVar(&validityDurationWeeks, "w", 4, "validity duration in weeks")
+	flag.IntVar(&validityDurationWeeks, "w", 0, "validity duration in weeks, set 0 to delete")
+	flag.IntVar(&validityDurationHours, "h", 1, "validity duration in hours, set 0 to delete")
 	flag.StringVar(&apiURL, "u", "http://localhost:8080/registry", "URL to send the POST request to")
 	flag.Parse()
 }
@@ -40,7 +42,7 @@ func init() {
 func main() {
 	fmt.Println("droneregistry client " + buildVersion)
 	fmt.Println("- drone ID: ", droneID)
-	fmt.Println("- validity: ", validityDurationWeeks, "weeks")
+	fmt.Println("- validity: ", validityDurationWeeks, "weeks,", validityDurationHours, "hours")
 	fmt.Println("- url:      ", apiURL)
 	fmt.Println("")
 
@@ -62,15 +64,28 @@ func main() {
 		log.Fatalln("fatal error:", err)
 	}
 
-	// auto-set validity from now until now + $validityDurationWeeks weeks
-	validFrom := time.Now()
-	validUntil := time.Now().AddDate(0, 0, 7*validityDurationWeeks)
+	// build API query string
+	var validityHours = (7 * validityDurationWeeks) + validityDurationHours
+	var jsonStr = []byte("")
+	var httpMethod = ""
 
-	var jsonStr = []byte(`[{"droneId": "` + droneID + `", "validFrom": "` + validFrom.Format(time.RFC3339) + `", "validUntil": "` + validUntil.Format(time.RFC3339) + `"}]`)
+	if validityHours == 0 { // DELETE drone from registry
+		httpMethod = "DELETE"
+		jsonStr = []byte(`[{"droneId": "` + droneID + `"}]`)
+
+	} else { // POST (update) drone validity
+		httpMethod = "POST"
+
+		// auto-set validity from now until now + $validityDurationWeeks weeks + $validityDurationHours weeks
+		validFrom := time.Now()
+		validUntil := time.Now().Add(time.Hour * time.Duration((validityDurationWeeks*7*24)+validityDurationHours))
+
+		jsonStr = []byte(`[{"droneId": "` + droneID + `", "validFrom": "` + validFrom.Format(time.RFC3339) + `", "validUntil": "` + validUntil.Format(time.RFC3339) + `"}]`)
+	}
 
 	// send data to dronePKI
 	fmt.Println("sending request to registry...")
-	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(jsonStr))
+	req, err := http.NewRequest(httpMethod, apiURL, bytes.NewBuffer(jsonStr))
 	if err != nil {
 		log.Fatalln("fatal error:", err)
 	}
