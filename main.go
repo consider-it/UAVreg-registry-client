@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-const buildVersion string = "v1.0.0"
+const buildVersion string = "v1.1.0"
 
 // configuration parameters
 const droneIDByteLen = 18
@@ -67,15 +67,11 @@ func main() {
 	// build API query string
 	var validityHours = (7 * validityDurationWeeks) + validityDurationHours
 	var jsonStr = []byte("")
-	var httpMethod = ""
 
 	if validityHours == 0 { // DELETE drone from registry
-		httpMethod = "DELETE"
-		jsonStr = []byte(`[{"droneId": "` + droneID + `"}]`)
+		jsonStr = []byte(`[{"droneId": "` + droneID + `", "validFrom": "", "validUntil": ""}]`)
 
 	} else { // POST (update) drone validity
-		httpMethod = "POST"
-
 		// auto-set validity from now until now + $validityDurationWeeks weeks + $validityDurationHours weeks
 		validFrom := time.Now()
 		validUntil := time.Now().Add(time.Hour * time.Duration((validityDurationWeeks*7*24)+validityDurationHours))
@@ -85,7 +81,7 @@ func main() {
 
 	// send data to dronePKI
 	fmt.Println("sending request to registry...")
-	req, err := http.NewRequest(httpMethod, apiURL, bytes.NewBuffer(jsonStr))
+	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(jsonStr))
 	if err != nil {
 		log.Fatalln("fatal error:", err)
 	}
