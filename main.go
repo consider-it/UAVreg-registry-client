@@ -2,6 +2,7 @@
 // of the UAVreg PKI Server.
 //
 // Copyright: 2021 Jannik Beyerstedt (consider it GmbH)
+// License: MIT
 
 package main
 
